@@ -1,38 +1,35 @@
-require 'sqlite3'
 
-class Question
-
-  attr_accessor :title, :body, :user_id
+class User
+  attr_accessor :fname, :lname
 
   def self.find_by_id(id)
     data = QuestionsDatabase.instance.execute(<<-SQL, id)
       SELECT
         *
       FROM
-        questions
+        users
       WHERE
         id = ?
     SQL
-    data.map { |datum| Question.new(datum) }.first
+    data.map { |datum| User.new(datum) }.first
   end
 
   def initialize(options)
     @id = options['id']
-    @title = options['title']
-    @body = options['body']
-    @user_id = options['user_id']
+    @fname = options['fname']
+    @lname = options['lname']
   end
+
 
   def create
     raise "#{self} already in database" if @id
-    QuestionsDatabase.instance.execute(<<-SQL, @title, @body, @user_id)
+
+    QuestionsDatabase.instance.execute(<<-SQL, @fname, @lname)
       INSERT INTO
-        questions (title, body, user_id)
+        users (fname, lname)
       VALUES
-        (?, ?, ?)
+        (?, ?)
     SQL
     @id = QuestionsDatabase.instance.last_insert_row_id
   end
-
-
 end
