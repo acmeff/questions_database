@@ -54,7 +54,7 @@ class QuestionFollow
       GROUP BY
         question_follows.question_id
       ORDER BY
-        COUNT(question_follow.question_id)
+        COUNT(question_follows.question_id)
       LIMIT ?
     SQL
     data.map { |datum| Question.new(datum) }
