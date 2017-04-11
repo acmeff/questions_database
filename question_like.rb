@@ -1,4 +1,4 @@
-class QuestionFollow
+class QuestionLike
   attr_accessor :user_id, :question_id
 
   def self.find_by_id(id)
@@ -6,11 +6,12 @@ class QuestionFollow
       SELECT
         *
       FROM
-        question_follows
+        question_likes
       WHERE
-        id = ?
+        id  = ?
     SQL
-    data.map { |datum| QuestionFollow.new(datum) }.first
+
+    data.map { |datum| QuestionLike.new(datum) }.first
   end
 
   def initialize(options)
@@ -20,10 +21,11 @@ class QuestionFollow
   end
 
   def create
-    raise "#{self} already in database" if @id
+    raise "#{self} already in ya database" if @id
+
     QuestionsDatabase.instance.execute(<<-SQL, @user_id, @question_id)
       INSERT INTO
-        question_follows (user_id, question_id)
+        question_likes (user_id, question_id)
       VALUES
         (?, ?)
     SQL
