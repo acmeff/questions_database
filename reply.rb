@@ -47,15 +47,25 @@ class Reply
     @body = options['body']
   end
 
-  def create
-    raise "#{self} already there ya dum dum" if @id
-    QuestionsDatabase.instance.execute(<<-SQL, @question_id, @parent_reply, @user_id, @body)
-      INSERT INTO
-        replies (question_id, parent_reply, user_id, body)
-      VALUES
-        (?, ?, ?, ?)
-    SQL
-    @id = QuestionsDatabase.instance.last_insert_row_id
+  def save
+    if @id
+      QuestionsDatabase.instance.execute(<<-SQL, @question_id, @parent_reply, @user_id, @body, @id)
+        UPDATE
+          replies
+        SET
+          question_id = ?, parent_reply = ?, user_id = ?, body = ?
+        WHERE
+          id = ?
+      SQL
+    else
+      QuestionsDatabase.instance.execute(<<-SQL, @question_id, @parent_reply, @user_id, @body)
+        INSERT INTO
+          replies (question_id, parent_reply, user_id, body)
+        VALUES
+          (?, ?, ?, ?)
+      SQL
+      @id = QuestionsDatabase.instance.last_insert_row_id
+    end
   end
 
   def author
